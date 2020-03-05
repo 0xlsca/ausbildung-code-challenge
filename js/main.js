@@ -1,5 +1,6 @@
 const fileInput = $("#file-input");
 const content = $("#content");
+const chartSpace = $("#csv-charts");
 
 let inputFile = null;
 let tableData = null;
@@ -25,7 +26,6 @@ function disableFileInput() {
 }
 
 function createTable() {
-  // fills the content div with the table
 
   // make tabulator
   table = new Tabulator("#csv-table", {
@@ -71,6 +71,8 @@ function showLoadingScreen() {
 }
 
 function setupTableControls() {
+  // adds functionality to the table control buttons
+
   //Add row on "Add Row" button click
   $("#csv-table-add-row").click(function () {
     table.addRow({});
@@ -95,6 +97,112 @@ function setupTableControls() {
   $("#csv-table-download").click(function () {
     table.download("csv", inputFile.name);
   });
+}
+
+function createChartDataSet() {
+  // creates the dataset that is used for the charts
+  // each column will have a dedicated dataset consisting of value => count pairs in form of a list
+
+  let ret = [];
+
+  let columns = tableData.meta.fields;
+  let data = tableData.data;
+
+  // reduces a column to value => count pairs
+  const columnReducer = (accumulator, currentValue) => {
+
+    // exclude empty values
+    if (currentValue === "") {
+      return accumulator;
+    }
+
+    if (accumulator[currentValue]) {
+      accumulator[currentValue] += 1
+    } else {
+      accumulator[currentValue] = 1
+    }
+
+    return accumulator;
+
+  };
+
+  // build column value map
+  let columnValueMap = {};
+
+  columns.forEach(columnName => {
+    columnValueMap[columnName] = [];
+  });
+
+  // populate value map
+  data.forEach(row => {
+    columns.forEach(columnName => {
+      columnValueMap[columnName].push(row[columnName]);
+    });
+  });
+
+  // iterate over the entries and reduce to value => count pairs
+  for (let key in columnValueMap) {
+    ret[key] = columnValueMap[key].reduce(columnReducer, {});
+  }
+
+  return ret;
+
+}
+
+function makeChartsFromDataset(dataSet) {
+  // creates charts from the passed dataset.
+  // the dataset is expected to have a column[0..\*] => value[1..\*] => count[1]
+  // structure
+
+  for (let key in dataSet) {
+
+    let chartId = `chart-${key}`;
+
+    let chartElement = chartSpace.append(`<canvas id="${chartId}"></canvas>`);
+
+    let ctx = $("#"+chartId).get(0).getContext("2d");
+
+    let chart = new Chart(ctx, {
+      type: "doughnut",
+      data: transformRawDatasetToChartDataset(dataSet[key], key),
+      options: {}
+    });
+
+  }
+
+}
+
+function transformRawDatasetToChartDataset(rawDataset, label) {
+  // transforms a raw dataset to a chart dataset for usage as data element in chart construction.
+  // the raw dataset is expected to have a value[1..\*] => count[1]
+  // structure.
+  // the label is expected to be a string value.
+
+  let labels = Object.keys(rawDataset);
+
+  let color = generateRandomColor();
+
+  let dataSets = [{
+    label: label,
+    backgroundColor: color,
+    borderColor: color,
+    data: Object.values(rawDataset)
+  }];
+
+
+  let ret = {
+    labels: labels,
+    datasets: dataSets
+  };
+
+  return ret;
+
+}
+
+function generateRandomColor() {
+  // generates a random rgb color, returning a string with a call to the rgb() function
+
+  return `rgb(${Math.random()*256|0},${Math.random()*256|0},${Math.random()*256|0})`
 }
 
 fileInput.change(handleNewFile);
