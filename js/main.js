@@ -164,7 +164,7 @@ function makeChartsFromDataset(dataSet) {
     let ctx = $("#"+chartId).get(0).getContext("2d");
 
     let chart = new Chart(ctx, {
-      type: "doughnut",
+      type: "pie",
       data: transformRawDatasetToChartDataset(dataSet[key], key),
       options: {}
     });
