@@ -31,11 +31,14 @@ function createTable() {
   table = new Tabulator("#csv-table", {
     addRowPos: "top",
     history: true,
-    height: $(window).height() * 0.9, // maximum height without too much overhead
+    // height: $(window).height() * 0.9, // maximum height without too much overhead
+    paginationSize: 10,
     data: tableData.data, //assign data to table
     layout: "fitColumns", //fit columns to width of table (optional)
     columns: makeColumns(tableData.meta.fields),
     pagination: "local",
+    responsiveLayout: "collapse",
+    placeholder:"No Data Available",
   });
 
   // make table controls visible
