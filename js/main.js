@@ -157,6 +157,10 @@ function makeChartsFromDataset(dataSet) {
 
   for (let key in dataSet) {
 
+    if (Object.entries(dataSet[key]).length === 0) {
+      continue;
+    }
+
     let chartId = `chart-${key}`;
 
     let chartElement = chartSpace.append(`<canvas id="${chartId}"></canvas>`);
