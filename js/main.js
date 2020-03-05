@@ -64,6 +64,7 @@ function receiveInput(results, file) {
   tableData = results;
   console.log("Successfully parsed the file " + file.name);
   createTable();
+  makeChartsFromDataset(createChartDataSet());
 }
 
 function showLoadingScreen() {
