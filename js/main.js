@@ -161,11 +161,11 @@ function makeChartsFromDataset(dataSet) {
 
     let chartElement = chartSpace.append(`<canvas id="${chartId}"></canvas>`);
 
-    let ctx = $("#"+chartId).get(0).getContext("2d");
+    let ctx = $("#" + chartId).get(0).getContext("2d");
 
     let chart = new Chart(ctx, {
       type: "pie",
-      data: transformRawDatasetToChartDataset(dataSet[key], key),
+      data: transformRawDatasetToChartDataset(dataSet[key], key, ctx),
       options: {}
     });
 
@@ -173,20 +173,23 @@ function makeChartsFromDataset(dataSet) {
 
 }
 
-function transformRawDatasetToChartDataset(rawDataset, label) {
+function transformRawDatasetToChartDataset(rawDataset, label, context) {
   // transforms a raw dataset to a chart dataset for usage as data element in chart construction.
   // the raw dataset is expected to have a value[1..\*] => count[1]
   // structure.
   // the label is expected to be a string value.
+  // the context is supposed to be the chart canvas 2d context.
 
   let labels = Object.keys(rawDataset);
 
-  let color = generateRandomColor();
+  let fills = [];
+
+  labels.forEach(() => fills.push(generateRandomColor()));
 
   let dataSets = [{
     label: label,
-    backgroundColor: color,
-    borderColor: color,
+    backgroundColor: fills,
+    borderColor: fills,
     data: Object.values(rawDataset)
   }];
 
@@ -201,9 +204,19 @@ function transformRawDatasetToChartDataset(rawDataset, label) {
 }
 
 function generateRandomColor() {
-  // generates a random rgb color, returning a string with a call to the rgb() function
+  // generates a random rgb color, returning a '#' string
 
-  return `rgb(${Math.random()*256|0},${Math.random()*256|0},${Math.random()*256|0})`
+  let num = ((Math.random() * 0xffffff) | 0).toString(16);
+
+  let padding = 6 - num.length;
+
+  let paddingString = "";
+
+  for (let i = 0; i !== padding; i++) {
+    paddingString += "0";
+  }
+
+  return "#" + paddingString + num;
 }
 
 fileInput.change(handleNewFile);
