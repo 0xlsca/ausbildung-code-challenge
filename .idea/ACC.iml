@@ -9,5 +9,7 @@
     <orderEntry type="library" name="tabulator" level="application" />
     <orderEntry type="library" name="Chart" level="application" />
     <orderEntry type="library" name="papaparse" level="application" />
+    <orderEntry type="library" name="materialize" level="application" />
+    <orderEntry type="library" name="tabulator_materialize" level="application" />
   </component>
 </module>
