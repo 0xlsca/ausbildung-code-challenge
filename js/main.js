@@ -2,6 +2,8 @@ const fileInput = $("#file-input");
 const content = $("#content");
 const chartSpace = $("#csv-charts");
 
+let maxLabelLength = 23;
+
 let inputFile = null;
 let tableData = null;
 
@@ -38,7 +40,7 @@ function createTable() {
     columns: makeColumns(tableData.meta.fields),
     pagination: "local",
     responsiveLayout: "collapse",
-    placeholder:"No Data Available",
+    placeholder: "No Data Available",
   });
 
   // make table controls visible
@@ -166,16 +168,48 @@ function makeChartsFromDataset(dataSet) {
 
     let chartId = `chart-${key}`;
 
-    let chartElement = chartSpace.append(`<canvas id="${chartId}"></canvas>`);
+    let chartElement = chartSpace.append(`
+        <div class="col s12 m6">
+            <div class="card-panel">
+<!--                <span class="card-title">${key}</span>-->
+                <canvas id="${chartId}"></canvas>
+            </div>
+        </div>
+`);
 
     let ctx = $("#" + chartId).get(0).getContext("2d");
 
     let chart = new Chart(ctx, {
       type: "pie",
       data: transformRawDatasetToChartDataset(dataSet[key], key, ctx),
-      options: {}
-    });
+      options: {
+        legend: {
+          position: "left",
+          labels: {
+            generateLabels: (chart) => {
+              let items = Chart.defaults.pie.legend.labels.generateLabels(chart);
 
+              items.map((legendItem) => {
+                if (legendItem.text.length > maxLabelLength + 3) {
+                  legendItem.text = legendItem.text.substr(0, maxLabelLength - 3) + "...";
+                }
+
+                return legendItem;
+              }, this);
+
+              return items;
+
+            }
+          },
+        },
+        plugins: {
+          labels: {
+            render: 'percentage',
+            precision: 2
+          }
+        },
+      }
+    });
   }
 
 }
