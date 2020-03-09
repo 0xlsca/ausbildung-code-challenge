@@ -16,6 +16,7 @@
   <link href="https://unpkg.com/tabulator-tables@4.5.3/dist/css/tabulator.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link href="https://unpkg.com/tabulator-tables@4.5.3/dist/css/materialize/tabulator_materialize.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.css" integrity="sha256-Kq686ftxGamHGd8MpwJXmYgk1s7m00maEfHX1VpKYP8=" crossorigin="anonymous" />
 
   <meta name="theme-color" content="#fafafa">
 </head>
@@ -29,16 +30,34 @@
 
 
   <div class="container" id="content">
-    <input type="file" id="file-input"/>
+
+    <div class="row">
+      <div class="col s12">
+        <h1>Visual CSV Editor</h1>
+        <div class="divider"></div>
+      </div>
+    </div>
+
+    <div class="row" id="file-input-row">
+      <input type="file" id="file-input" class="dropify col s12 m6 l6"/>
+    </div>
     <div class="row" id="csv-table-controls" >
-      <a class="waves-effect waves-light btn col s1" id="csv-table-add-row">Add</a>
-      <a class="waves-effect waves-light btn col s1" id="csv-table-del-row">Remove</a>
-      <a class="waves-effect waves-light btn col s1" id="csv-table-clear">Clear</a>
-      <a class="waves-effect waves-light btn col s1" id="csv-table-reset">Reset</a>
-      <a class="waves-effect waves-light btn col s1" id="csv-table-download">Download</a>
+      <div class="col s12">
+        <a class="waves-effect waves-light btn" id="csv-table-add-row">Add</a>
+        <a class="waves-effect waves-light btn" id="csv-table-del-row">Remove</a>
+        <a class="waves-effect waves-light btn" id="csv-table-clear">Clear</a>
+        <a class="waves-effect waves-light btn" id="csv-table-reset">Reset</a>
+        <a class="waves-effect waves-light btn" id="csv-table-download">Download</a>
+      </div>
     </div>
     <div class="row" id='csv-table'></div>
-    <div class="row" id="csv-charts"></div>
+    <div class="row" id="csv-charts">
+      <div class="row" id="csv-charts-controls">
+        <a class='dropdown-trigger waves-effect waves-light btn s1' data-target='csv-charts-select'>Generate Chart</a>
+        <ul id='csv-charts-select' class='dropdown-content'>
+        </ul>
+      </div>
+    </div>
   </div>
 
 
@@ -58,6 +77,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
 
   <!--  always keep those at the bottom to avoid unresolved references-->
   <script src="js/plugins.js"></script>

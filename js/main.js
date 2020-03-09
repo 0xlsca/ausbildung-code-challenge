@@ -1,6 +1,7 @@
-const fileInput = $("#file-input");
+const fileInput = $("#file-input-row");
 const content = $("#content");
 const chartSpace = $("#csv-charts");
+const chartDropdown = $("#csv-charts-select");
 
 let maxLabelLength = 23;
 
@@ -162,64 +163,97 @@ function makeChartsFromDataset(dataSet) {
 
   for (let key in dataSet) {
 
-    if (Object.entries(dataSet[key]).length === 0) {
+    if (!dataSet.hasOwnProperty(key)) {
       continue;
     }
 
-    let chartId = `chart-${key}`;
+    let entryCount = Object.entries(dataSet[key]).length;
 
-    let chartElement = chartSpace.append(`
-        <div class="col s12 m6">
-            <div class="card-panel">
-<!--                <span class="card-title">${key}</span>-->
-                <canvas id="${chartId}"></canvas>
-            </div>
-        </div>
-`);
+    // omit empty data sets
+    if (entryCount === 0) {
+      continue;
+    }
 
-    let ctx = $("#" + chartId).get(0).getContext("2d");
+    // don't generate charts for data sets with more than 10 entries
+    if (entryCount > 10) {
 
-    let chart = new Chart(ctx, {
-      type: "pie",
-      data: transformRawDatasetToChartDataset(dataSet[key], key, ctx),
-      options: {
-        legend: {
-          position: "left",
-          labels: {
-            generateLabels: (chart) => {
-              let items = Chart.defaults.pie.legend.labels.generateLabels(chart);
+      let addChartButtonID = `add-chart-${key}`;
+      let addChartButtonLi = `add-chart-${key}-li`;
 
-              items.map((legendItem) => {
-                if (legendItem.text.length > maxLabelLength + 3) {
-                  legendItem.text = legendItem.text.substr(0, maxLabelLength - 3) + "...";
-                }
+      chartDropdown.append(`<li id="${addChartButtonLi}"><a id="${addChartButtonID}">${key} - ${
+        dataSet[key]!==undefined ? Object.entries(dataSet[key]).length : 0
+      } entries</a></li>`);
 
-                return legendItem;
-              }, this);
+      $(`#${addChartButtonID}`).click(() => {
+        addChart(key, dataSet[key]);
+        $("#"+addChartButtonLi).remove();
+      });
 
-              return items;
+    } else {
+      addChart(key, dataSet[key])
+    }
 
-            }
-          },
-        },
-        plugins: {
-          labels: {
-            render: 'percentage',
-            precision: 2
-          }
-        },
-      }
-    });
   }
+
+  $('.dropdown-trigger').dropdown();
 
 }
 
-function transformRawDatasetToChartDataset(rawDataset, label, context) {
+function addChart(name, dataSet) {
+  // adds a chart with the passed name and data set to the chart space
+
+  let chartId = `chart-${name}`;
+
+  chartSpace.append(`
+        <div class="col s12 m6">
+            <div class="card-panel">
+                <canvas id="${chartId}"></canvas>
+            </div>
+        </div>
+    `);
+
+  let chartElement = $("#" + chartId);
+
+  let ctx = chartElement.get(0).getContext("2d");
+
+  let chart = new Chart(ctx, {
+    type: "pie",
+    data: transformRawDatasetToChartDataset(dataSet, name, ctx),
+    options: {
+      legend: {
+        position: "left",
+        labels: {
+          generateLabels: (chart) => {
+            let items = Chart.defaults.pie.legend.labels.generateLabels(chart);
+
+            items.map((legendItem) => {
+              if (legendItem.text.length > maxLabelLength + 3) {
+                legendItem.text = legendItem.text.substr(0, maxLabelLength - 3) + "...";
+              }
+
+              return legendItem;
+            }, this);
+
+            return items;
+
+          }
+        },
+      },
+      plugins: {
+        labels: {
+          render: 'percentage',
+          precision: 2
+        }
+      },
+    }
+  });
+}
+
+function transformRawDatasetToChartDataset(rawDataset, label) {
   // transforms a raw dataset to a chart dataset for usage as data element in chart construction.
   // the raw dataset is expected to have a value[1..\*] => count[1]
   // structure.
   // the label is expected to be a string value.
-  // the context is supposed to be the chart canvas 2d context.
 
   let labels = Object.keys(rawDataset);
 
