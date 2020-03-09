@@ -209,7 +209,13 @@ function addChart(name, dataSet) {
   chartSpace.append(`
         <div class="col s12 m6">
             <div class="card-panel">
-                <canvas id="${chartId}"></canvas>
+                <div class="row">
+                  <h5>${name}</h5>
+                  <div class="divider"></div>
+                </div>
+                <div class="row">
+                    <canvas id="${chartId}" class="col"></canvas>
+                </div>
             </div>
         </div>
     `);
