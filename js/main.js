@@ -189,6 +189,8 @@ function makeChartsFromDataset(dataSet) {
         $("#"+addChartButtonLi).remove();
       });
 
+      $("#csv-charts-controls").show();
+
     } else {
       addChart(key, dataSet[key])
     }

@@ -267,3 +267,6 @@ textarea {
   display: none;
 }
 
+#csv-charts-controls {
+  display: none;
+}
